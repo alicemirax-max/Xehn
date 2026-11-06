@@ -52,6 +52,11 @@ android {
     }
 
     packaging {
+        // The gomobile-produced libgojni.so is already stripped; letting AGP try
+        // again fails harmlessly but noisily, so keep it out of the way.
+        jniLibs {
+            useLegacyPackaging = true
+        }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
