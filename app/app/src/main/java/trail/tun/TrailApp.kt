@@ -2,7 +2,7 @@ package trail.tun
 
 import android.app.Application
 import android.util.Log
-import trail.tun.go.Mobile as GoMobile
+import trail.tun.go.mobile.Mobile as GoMobile
 
 /**
  * Wires the socket protector into the engine at process start.

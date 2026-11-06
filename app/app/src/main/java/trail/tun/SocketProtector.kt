@@ -1,7 +1,8 @@
 package trail.tun
 
 import android.util.Log
-import trail.tun.go.Mobile as GoMobile
+import trail.tun.go.mobile.Mobile as GoMobile
+import trail.tun.go.mobile.Protector
 
 /**
  * Bridges Android's socket protection into the Go engine.
@@ -12,7 +13,7 @@ import trail.tun.go.Mobile as GoMobile
  * returns false until TunService has established an interface, and the engine
  * treats false as a hard failure rather than a warning.
  */
-object SocketProtector : GoMobile.Protector {
+object SocketProtector : Protector {
 
     @Volatile
     private var delegate: ((Int) -> Boolean)? = null

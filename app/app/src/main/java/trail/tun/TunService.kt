@@ -11,7 +11,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import trail.tun.R
-import trail.tun.go.Mobile
+import trail.tun.go.mobile.Mobile
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
