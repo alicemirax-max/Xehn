@@ -29,9 +29,9 @@ object SocketProtector : Protector {
         GoMobile.resetProtectCache()
     }
 
-    override fun protect(fd: Int): Boolean {
+    override fun protect(fd: Long): Boolean {
         val fn = delegate ?: return false
-        val ok = runCatching { fn(fd) }.getOrElse {
+        val ok = runCatching { fn(fd.toInt()) }.getOrElse {
             Log.w("SocketProtector", "protect($fd) threw: ${it.message}")
             false
         }

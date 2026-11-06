@@ -81,7 +81,7 @@ class TunService : VpnService() {
         try {
             // The engine takes ownership of the descriptor. Kotlin must not
             // close it independently or the Go side reads from a dead fd.
-            Mobile.start(fd.fd, cfg)
+            Mobile.start(fd.fd.toLong(), cfg)
             connected = true
             startForeground(NOTIFICATION_ID, buildNotification("Connecting…"))
         } catch (t: Throwable) {
