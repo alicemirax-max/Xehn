@@ -1,0 +1,96 @@
+name: Build APK
+
+# Builds the Go engine into an AAR, then assembles the app.
+#
+# Why CI at all: gomobile needs the Android NDK, whose Linux toolchain is x86_64
+# only. On an arm64 host the linker cannot run. GitHub's runners are x86_64, so
+# this is the supported place to do it.
+#
+# Triggers: push to main, any pull request, or manual dispatch (which is how you
+# get an APK without changing code).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GO_VERSION: "1.23.x"
+  JAVA_VERSION: "17"
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          # go.mod lives in engine/, so the cache key must point there.
+          cache-dependency-path: engine/go.sum
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: |
+          # gomobile looks for the NDK under $ANDROID_HOME/ndk/<version>.
+          # 27.x is the current stable and matches what the engine is tested on.
+          sdkmanager "ndk;27.2.12479018"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
+
+      - name: Install gomobile
+        run: |
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          go install golang.org/x/mobile/cmd/gobind@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Verify engine
+        working-directory: engine
+        run: |
+          go vet ./...
+          go test ./... -count=1
+
+      - name: Build engine as Android library
+        working-directory: engine
+        run: |
+          # arm64 only. Adding more ABIs roughly doubles build time and output
+          # size for devices this app does not target.
+          gomobile bind \
+            -target=android/arm64 \
+            -androidapi=24 \
+            -o ../app/app/libs/tuntrail.aar \
+            ./mobile
+
+      - name: Assemble debug APK
+        working-directory: app
+        run: |
+          chmod +x gradlew || true
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tuntrail-debug
+          path: app/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload engine AAR
+        # Useful when you want to inspect the binding without rebuilding.
+        uses: actions/upload-artifact@v4
+        with:
+          name: tuntrail-aar
+          path: app/app/libs/tuntrail.aar
+          retention-days: 7

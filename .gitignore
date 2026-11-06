@@ -1,0 +1,24 @@
+# Go
+/engine/**/*.test
+/engine/cmd/*/tuntrail-cli
+*.so
+*.aar
+
+# Android / Gradle
+/app/.gradle/
+/app/build/
+/app/app/build/
+/app/local.properties
+/app/app/libs/*.aar
+*.apk
+*.keystore
+*.jks
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

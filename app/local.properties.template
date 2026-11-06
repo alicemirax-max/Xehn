@@ -1,0 +1,3 @@
+# Not needed on CI: the Android Gradle Plugin finds the SDK from ANDROID_HOME.
+# For a local build, copy this to local.properties and set your path.
+sdk.dir=/path/to/android-sdk
