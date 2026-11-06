@@ -95,6 +95,14 @@ jobs:
             -o ../app/app/libs/tuntrail.aar \
             ./mobile
 
+      - name: Show generated bindings
+        # The Java package gomobile picks is not obvious, and guessing it cost a
+        # build. Print the class list so the next failure shows the truth.
+        run: |
+          unzip -o -q app/app/libs/tuntrail.aar -d /tmp/aar
+          echo "--- classes.jar contents:"
+          unzip -l /tmp/aar/classes.jar | awk '{print $4}' | grep -E '^go/|^trail/|\.class$' | head -40 || true
+
       - name: Assemble debug APK
         working-directory: app
         run: |
