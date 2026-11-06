@@ -84,9 +84,14 @@ jobs:
       - name: Build engine as Android library
         working-directory: engine
         run: |
+          # -javapkg pins the generated package so Kotlin imports are stable:
+          #   trail.tun.go.Mobile
+          # Without it gomobile uses a path derived from the module name, which
+          # changes whenever the module is renamed.
           gomobile bind \
             -target=android/arm64 \
             -androidapi=24 \
+            -javapkg=trail.tun.go \
             -o ../app/app/libs/tuntrail.aar \
             ./mobile
 

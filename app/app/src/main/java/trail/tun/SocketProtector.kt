@@ -1,7 +1,7 @@
 package trail.tun
 
 import android.util.Log
-import trail.tun.Mobile as GoMobile
+import trail.tun.go.Mobile as GoMobile
 
 /**
  * Bridges Android's socket protection into the Go engine.

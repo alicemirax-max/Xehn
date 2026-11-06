@@ -1,5 +1,6 @@
 package trail.tun
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,6 +10,8 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import trail.tun.R
+import trail.tun.go.Mobile
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -174,11 +177,11 @@ class TunService : VpnService() {
         updateNotification(status)
     }
 
-    private fun buildNotification(text: String) =
+    private fun buildNotification(text: String): Notification =
         NotificationCompat.Builder(this, ensureChannel())
             .setContentTitle("TunTrail")
             .setContentText(text)
-            .setSmallIcon(android.R.drawable.stat_sys_vpn_ic)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(

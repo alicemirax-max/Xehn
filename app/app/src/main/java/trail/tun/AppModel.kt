@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.json.JSONArray
 import org.json.JSONObject
+import trail.tun.go.Mobile
 
 /**
  * Application state holder.
@@ -102,7 +104,9 @@ class AppModel(private val appContext: Context) {
             id = "wg-" + System.currentTimeMillis(),
             name = name.ifBlank { "WireGuard" },
             protocol = "wg",
-            host = runCatching { JSONObject(json).optString("endpoint") }.getOrDefault(""),
+            host = runCatching {
+                JSONObject(json).optJSONObject("wireguard")?.optString("endpoint").orEmpty()
+            }.getOrDefault(""),
             configJson = wrapWireGuard(json),
         )
         _nodes.value = _nodes.value + node
@@ -152,7 +156,7 @@ class AppModel(private val appContext: Context) {
     fun refreshLogs() {
         _logs.value = runCatching {
             val raw = Mobile.logsJSON()
-            val arr = org.json.JSONArray(raw)
+            val arr = JSONArray(raw)
             (0 until arr.length()).map { i ->
                 val o = arr.getJSONObject(i)
                 "${o.optString("msg")}"
